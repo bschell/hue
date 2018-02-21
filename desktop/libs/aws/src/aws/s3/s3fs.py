@@ -79,18 +79,17 @@ class S3FileSystem(object):
     self._filebrowser_action = PERMISSION_ACTION_S3
 
   def _init_bucket_cache(self):
-    if self._bucket_cache is None:
-      try:
-        buckets = self._s3_connection.get_all_buckets()
-      except S3FileSystemException, e:
-        raise e
-      except S3ResponseError, e:
-        raise S3FileSystemException(_('Failed to initialize bucket cache: %s') % e.reason)
-      except Exception, e:
-        raise S3FileSystemException(_('Failed to initialize bucket cache: %s') % e)
-      self._bucket_cache = {}
-      for bucket in buckets:
-        self._bucket_cache[bucket.name] = bucket
+    try:
+      buckets = self._s3_connection.get_all_buckets()
+    except S3FileSystemException, e:
+      raise e
+    except S3ResponseError, e:
+      raise S3FileSystemException(_('Failed to initialize bucket cache: %s') % e.reason)
+    except Exception, e:
+      raise S3FileSystemException(_('Failed to initialize bucket cache: %s') % e)
+    self._bucket_cache = {}
+    for bucket in buckets:
+      self._bucket_cache[bucket.name] = bucket
 
   def _get_bucket(self, name):
     self._init_bucket_cache()
